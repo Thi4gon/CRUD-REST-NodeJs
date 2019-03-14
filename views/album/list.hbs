@@ -1,0 +1,29 @@
+<h3>Lista de Albums</h3>
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Titulo</th>
+<th>Id Usuario</th>
+
+</tr>
+
+</thead>
+<tbody>
+    {{#each list}} 
+    <tr>
+        <td>{{this.title}}</td>
+        <td>{{this.idusuario}}</td>
+  
+    
+    
+        <td>
+            <a href="/albums/{{this._id}}"><i class="fa fa-pen fa-lg" aria-hidden="true"> </i> </a>
+            <a href="/albums/delete/{{this.id}}" onclick="return confirm('Tem certeza que quer deletar?');"><i class="fa fa-trash fa-lg" aria-hidden="true"> </i> </a>
+        </td>
+    
+    </tr>
+    {{/each}}
+</tbody>
+
+</table>
+<a class="btn btn-secondary" href="/albums"><i class="fa fa-plus"></i> Cadastrar Album</a> 
