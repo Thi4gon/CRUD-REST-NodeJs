@@ -67,7 +67,7 @@ router.get('/list', (req, res) => {
                 list: docs
                 
             });
-          dados=  getData(req,res);
+          
         } else {
             console.log('Erro ao puxar a lista de Albums: ' + err);
         }
@@ -142,6 +142,13 @@ router.get('/delete/:id', (req,res)=>{
         else {console.log('Erro ao deletar : '+err);}
     });
 });
+
+router.get('/import', (req,res)=>{
+    
+    dados= getData(req,res);
+    res.redirect('albums/list');
+});
+
 
 
 });
