@@ -12,10 +12,10 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    if(req.body._id=='')
-    salvarAlbum(req, res);
+    if (req.body._id == '')
+        salvarAlbum(req, res);
     else
-    atualizarAlbum(req,res);
+        atualizarAlbum(req, res);
 });
 
 
@@ -24,7 +24,7 @@ function salvarAlbum(req, res) {
     var albums = new Albums();
     albums.title = req.body.title;
     albums.idusuario = req.body.idusuario;
-    
+
     albums.save((err, doc) => {
         if (!err) res.redirect('/albums/list');
         else {
@@ -41,15 +41,19 @@ function salvarAlbum(req, res) {
 }
 
 
-function atualizarAlbum(req,res){
-    Albums.findOneAndUpdate({_id: req.body._id},req.body,{new:true},(err,doc)=>{
+function atualizarAlbum(req, res) {
+    Albums.findOneAndUpdate({
+        _id: req.body._id
+    }, req.body, {
+        new: true
+    }, (err, doc) => {
 
-        if(!err) { res.redirect('albums/list');}
-        else{
-            if(err.name =='ValidationError')
-            {
-                handleValidationErorr(err,req.body);
-                res.render("album/addOrEdit",{
+        if (!err) {
+            res.redirect('albums/list');
+        } else {
+            if (err.name == 'ValidationError') {
+                handleValidationErorr(err, req.body);
+                res.render("album/addOrEdit", {
                     viewTitle: 'Atualizar Album',
                     albums: req.body
                 });
@@ -65,9 +69,8 @@ router.get('/list', (req, res) => {
         if (!err) {
             res.render("album/list", {
                 list: docs
-                
             });
-          
+
         } else {
             console.log('Erro ao puxar a lista de Albums: ' + err);
         }
@@ -84,94 +87,55 @@ function handleValidationErorr(err, body) {
             default:
                 break;
         }
-
     }
-
 }
 
-function getData(req,res){
-   
-  return axios.get("http://jsonplaceholder.typicode.com/albums").then(function(dados){
-    console.log(dados.data);
-    /*
-    var albums = new Albums();
-    albums.idusuario = dados.userid;
-    albums.title = dados.title;
-    
-    albums.save((err, doc) => {
-        if (!err) res.redirect('/albums/list');
-        else {
-            if (err.name == 'ValidationError') {
-                handleValidationErorr(err, req.body);
-                res.render("album/addOrEdit", {
-                    viewTitle: "Coloque o titulo do Album:",
-                    albums: req.body
-                });
-            } else
-                console.log('Error ao salvar:' + err);
+router.get('/delete/:id', (req, res) => {
+    Albums.findByIdAndRemove(req.params.id, (err, doc) => {
+        if (!err) {
+            res.redirect('/albums/list');
+        } else {
+            console.log('Erro ao deletar : ' + err);
         }
-    });*/
-    })
-        .catch(function(error){
-            if(err){
-                console.log("Erro ao consumir API: " +error);
-            }
-        });
-
-}
-
-
-router.get('/:id', (req, res) => {
-Albums.findById(req.params.id, (err,doc)=>{
-
-    if(!err){
-        res.render("album/addOrEdit",{
-viewTitle: "Atualizar Album",
-albums:doc
-        });
-
-    }
-});});
-
-router.get('/delete/:id', (req,res)=>{
-
-    Albums.findByIdAndRemove(req.params.id, (err,doc)=>{
-        if(!err){
-             res.redirect('/albums/list');
-        }
-        else {console.log('Erro ao deletar : '+err);}
     });
 });
 
 
-router.get('/import', (req,res) => {
+router.get('/import', (req, res) => {
 
-    return axios.get("http://jsonplaceholder.typicode.com/albums")
-      .then(function(raw){
-  
-        for(var dados in raw.data){
-          var albums = new Albums();
-          albums.idusuario = dados.userid;
-          albums.title = dados.title;
-  
-          albums.save((err, doc) => {
-              if (!err) res.redirect('/albums/list');
-              else {
-                  if (err.name == 'ValidationError') {
-                      handleValidationErorr(err, req.body);
-                      res.render("album/addOrEdit", {
-                          viewTitle: "Coloque o titulo do Album:",
-                          albums: req.body
-                      });
-                  } else {console.log('Error ao salvar:' + err);
-                }
-          }
+    axios
+        .get("http://jsonplaceholder.typicode.com/albums")
+        .then(function (raw) {
+
+            for (var dados of raw.data) {
+                var albums = new Albums();
+                albums.title = dados.title;
+                albums.idusuario = dados.userId;
+
+                albums.save((err, doc) => {
+                    if (!err) console.log("add sucess"); 
+                    else {
+                        if (err.name == 'ValidationError') {
+                        } 
+                        else console.log('Error ao salvar:' + err);
+                    }
+                });
+            }
+            res.redirect('/albums/list');
+        }).catch(function (error) {
+            if (err) console.log("Erro ao consumir API: " + error);
+        });
+});
+
+router.get('/:id', (req, res) => {
+    Albums.findById(req.params.id, (err, doc) => {
+        if (!err) {
+            res.render("album/addOrEdit", {
+                viewTitle: "Atualizar Album",
+                albums: doc
             });
-      }
-    }).catch(function(error){
-      if(err) console.log("Erro ao consumir API: " +error);
+        }
     });
-  });
-
+});
 
 module.exports = router;
