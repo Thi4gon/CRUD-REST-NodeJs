@@ -131,7 +131,7 @@ albums:doc
         });
 
     }
-});
+});});
 
 router.get('/delete/:id', (req,res)=>{
 
@@ -149,7 +149,7 @@ router.get('/import', (req,res) => {
     return axios.get("http://jsonplaceholder.typicode.com/albums")
       .then(function(raw){
   
-        for(var dados in dados.data){
+        for(var dados in raw.data){
           var albums = new Albums();
           albums.idusuario = dados.userid;
           albums.title = dados.title;
@@ -172,6 +172,6 @@ router.get('/import', (req,res) => {
       if(err) console.log("Erro ao consumir API: " +error);
     });
   });
-});
+
 
 module.exports = router;
